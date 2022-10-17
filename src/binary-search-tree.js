@@ -7,88 +7,111 @@ const { NotImplementedError } = require('../extensions/index.js');
 * using Node from extensions
 */
 class BinarySearchTree {
-	constructor() {
-		this.head = null
-	}
 
-	root() {
-		return this.head
-	}
+  constructor() {
+    this.ROOT = null
+  }
 
-	add(data) {
-		function addNode(el, data) {
-			const newNode = new Node(data)
-			if (!el) return newNode
-			if (el.data > data) el.left = addNode(el.left, data)
-			if (el.data < data) el.right = addNode(el.right, data)
-			return el
-		}
-		this.head = addNode(this.head, data)
-	}
+  root() {
+    return this.ROOT
+  }
 
-	has(data) {
-		function hasNode(el, data) {
-			if (!el) return false
-			if (el.data === data) return true
-			if (el.data > data) return hasNode(el.left, data)
-			if (el.data < data) return hasNode(el.right, data)
-		}
-		return hasNode(this.head, data)
-	}
+  add(data) {
+    function addNode(node, data) {
+      if (node === null) {
+        return new Node(data)
+      }
+      if (node.data === data) {
+        return node
+      }
+      node.data < data ? node.right = addNode(node.right, data) : node.left = addNode(node.left, data)
+      return node
+    }
 
-	find(data) {
-		function findNode(el, data) {
-			if (!el) return null
-			if (el.data === data) return el
-			if (el.data > data) return findNode(el.left, data)
-			if (el.data < data) return findNode(el.right, data)
-		}
-		return findNode(this.head, data)
-	}
+    this.ROOT = addNode(this.ROOT, data)
+  }
 
-	remove(data) {
-		function removeNode(el, data) {
-			if (!el) return null
-			if (el.data > data) {
-				el.left = removeNode(el.left, data)
-				return el
-			}
-			if (el.data < data) {
-				el.right = removeNode(el.right, data)
-				return el
-			}
-			if (!el.left) {
-				el = el.right
-				return el
-			}
-			if (!el.right) {
-				el = el.left
-				return el
-			}
-			let minRight = el.right
-			while (minRight.left) {
-				minRight = minRight.left
-			}
-			el.data = minRight.data
-			el.right = removeNode(el.right, minRight.data)
+  has(data) {
+    function hasNode(node, data) {
+      if (node === null) {
+        return false
+      }
+      if (node.data === data) {
+        return true
+      }
+      return node.data < data ? hasNode(node.right, data) : hasNode(node.left, data)
+    }
 
-			return el
-		}
-		this.head = removeNode(this.head, data)
-	}
+    return hasNode(this.ROOT, data)
+  }
 
-	min() {
-		let el = this.head
-		while (el.left) el = el.left
-		return el.data
-	}
+  find(data) {
+    function findNode(node, data) {
+      if (node === null) {
+        return null
+      }
+      if (node.data === data) {
+        return node
+      }
+      return node.data < data ? findNode(node.right, data) : findNode(node.left, data)
+    }
 
-	max() {
-		let el = this.head
-		while (el.right) el = el.right
-		return el.data
-	}
+    return findNode(this.ROOT, data)
+  }
+
+  remove(data) {
+    function removeNode(node, data) {
+      if (node === null) {
+        return null
+      }
+      if(node.data === data) {
+        if(node.left === null && node.right === null) {
+          return null
+        }
+        if(node.right === null) {
+          node = node.left
+          return node 
+        }
+        if(node.left === null) {
+          node = node.right
+          return node
+        }
+        let maxLeft = node.left
+        for(maxLeft;  maxLeft.right !== null; ) {
+          maxLeft = maxLeft.right
+        }
+        node.data = maxLeft.data
+        node.left = removeNode( node.left, node.data)
+      }
+      if(node.data < data) {
+        node.right = removeNode(node.right, data)
+        return node
+      }
+      if(node.data > data) {
+        node.left = removeNode(node.left, data)
+        return node
+      }
+    }
+
+    this.ROOT = removeNode(this.ROOT, data)
+  }
+
+  min(node = this.ROOT) {
+    for(node;  node.left !== null; ) {
+      node = node.left
+    }
+    return node.data
+  }
+
+  max(node = this.ROOT) {
+    for(node;  node.right !== null; ) {
+      node = node.right
+    }
+    return node.data
+  }
+
 }
+
 
 module.exports = {
   BinarySearchTree
